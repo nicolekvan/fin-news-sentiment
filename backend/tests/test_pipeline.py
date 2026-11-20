@@ -107,3 +107,15 @@ def test_decide_flags_multi_company_tone():
     s = ["Broadcom beat AMD for the contract."]
     d = decide("AMD", s[0], _p(0.85, 0.1, 0.05), s, [_p(0.85, 0.1, 0.05)], ("AVGO",))
     assert d.needs_review and "AVGO" in d.explanation
+
+
+def test_unpunctuated_headline_stays_its_own_sentence():
+    (link,) = link_article(
+        "Lenders balk at Nvidia chips in orbit",
+        "Banks raised concerns. Nvidia shares slipped.",
+        COMPANIES,
+        PATTERNS,
+    )
+    sents = split_sentences(link.passage)
+    assert sents == ["Lenders balk at Nvidia chips in orbit", "Nvidia shares slipped."]
+    assert all(s in link.passage for s in sents)

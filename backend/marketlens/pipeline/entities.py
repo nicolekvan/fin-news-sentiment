@@ -35,7 +35,11 @@ def company_pattern(c: Company) -> re.Pattern:
 
 
 def split_sentences(text: str) -> list[str]:
-    return [s.strip() for s in _SENTENCE.split(text) if s.strip()]
+    """Split on line breaks (headline/summary boundary) and on sentence punctuation."""
+    out = []
+    for line in text.split("\n"):
+        out.extend(s.strip() for s in _SENTENCE.split(line) if s.strip())
+    return out
 
 
 def link_article(
@@ -52,7 +56,8 @@ def link_article(
         if not idx:
             continue
         chosen = [sentences[i] for i in idx]
-        passage = " ".join(chosen)[:MAX_PASSAGE_CHARS]
+        # newline keeps the (often unpunctuated) headline a separate sentence
+        passage = "\n".join(chosen)[:MAX_PASSAGE_CHARS]
         m = patterns[c.ticker].search(" ".join(chosen))
         others = tuple(
             o.ticker

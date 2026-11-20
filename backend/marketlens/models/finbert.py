@@ -1,4 +1,5 @@
 """FinBERT (ProsusAI/finbert) batch inference. Runs in jobs only, never on web requests."""
+
 from __future__ import annotations
 
 import os
@@ -39,8 +40,13 @@ class FinBert:
         with torch.inference_mode():
             for i in range(0, len(texts), self.batch_size):
                 batch = texts[i : i + self.batch_size]
-                enc = self.tokenizer(batch, padding=True, truncation=True,
-                                     max_length=self.max_length, return_tensors="pt")
+                enc = self.tokenizer(
+                    batch,
+                    padding=True,
+                    truncation=True,
+                    max_length=self.max_length,
+                    return_tensors="pt",
+                )
                 probs = torch.softmax(self.model(**enc).logits, dim=-1).tolist()
                 for row in probs:
                     d = {self.labels[j]: p for j, p in enumerate(row)}

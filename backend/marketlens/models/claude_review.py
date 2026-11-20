@@ -7,6 +7,7 @@ Safety properties:
   passage, otherwise the review is rejected.
 - A daily request cap (llm_usage table) is enforced before every call.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -82,10 +83,14 @@ def review(conn: Connection, company: str, ticker: str, passage: str, client=Non
         system=SYSTEM_PROMPT,
         output_config={"effort": "low"},
         output_format=ClaudeVerdict,
-        messages=[{
-            "role": "user",
-            "content": f"Target company: {company} ({ticker})\n\n<article>\n{passage}\n</article>",
-        }],
+        messages=[
+            {
+                "role": "user",
+                "content": (
+                    f"Target company: {company} ({ticker})\n\n<article>\n{passage}\n</article>"
+                ),
+            }
+        ],
         # Server-side fallback if the model declines (beta).
         extra_headers={"anthropic-beta": "server-side-fallback-2026-07-01"},
         extra_body={"fallbacks": "default"},

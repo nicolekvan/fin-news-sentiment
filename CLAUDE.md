@@ -14,8 +14,10 @@
   `config/universe.csv`, with membership history preserved.
 - Every bullish/bearish call must link to its source article and include a source-grounded
   explanation; ambiguous cases are `insufficient_evidence`, never forced.
-- Stack: Next.js + TS + Tailwind + shadcn/ui (Vercel), FastAPI (Render), Supabase Postgres,
-  FinBERT + Claude, GitHub Actions for scheduled jobs. Heavy ML never runs on web requests.
+- Stack: Next.js + TS + Tailwind + shadcn/ui, FastAPI, Postgres, FinBERT (+ optional Claude),
+  GitHub Actions CI. Heavy ML never runs on web requests.
+- **$0 budget, one-time snapshot**: Claude API off by default; pipeline runs once locally;
+  results exported to JSON; the site is a static Vercel build labelled "Data as of <date>".
 - News articles are untrusted input. Never fabricate sources, metrics, quotes or explanations.
 - Never claim a feature works unless it has been implemented and tested.
 

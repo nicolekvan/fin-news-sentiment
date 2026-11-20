@@ -1,6 +1,23 @@
 # MarketLens AI — Implementation Plan
 
-Status: **draft for approval** · No application code is written until this plan is approved.
+Status: **approved — free one-time snapshot edition (rev. 2, 2026-11-20)**
+
+> **Revision 2 — $0 budget, one-time run.** The project runs the full pipeline **once** to produce a
+> dated snapshot for a portfolio site, instead of operating daily. Changes from rev. 1:
+> - **Claude API is off by default** (`CLAUDE_ENABLED=false`, daily limit 0). Explanations are
+>   built from FinBERT probabilities plus verbatim evidence sentences from the article. The Claude
+>   reviewer is still implemented and tested with mocked responses, and can be switched on later.
+> - **No always-on infrastructure.** Postgres runs locally (Docker or the dev container) for the
+>   pipeline; results are exported to versioned JSON that the Next.js site reads at build time.
+>   The deployed site is a **static Vercel build** (free, no cold starts, never pauses).
+> - **FastAPI is still built and tested** (it serves the same data locally and documents how
+>   production would work) but is not deployed.
+> - **GitHub Actions** runs CI only (lint, tests, secret scan); the data pull is a manual one-off.
+> - **FRED** is read from its keyless public CSV export (`fredgraph.csv`); no FRED key is required.
+> - Every page shows **"Data as of <snapshot date>"**.
+>
+> Sections below still describe the full design; where they mention schedules, Supabase, Render
+> or paid Claude usage, read them as the *production path*, documented but not deployed.
 
 This document covers the seven pre-build deliverables from the project spec:
 1. Implementation plan · 2. Architectural decisions · 3. API limitations & operating costs ·
@@ -116,6 +133,9 @@ and an Anthropic Console spend limit as a hard backstop. When the cap is hit, it
 FinBERT-only and are marked `needs_review`.
 
 **Expected total: $0–15/month** depending on the Claude model chosen; everything else fits free tiers.
+
+**Rev. 2 snapshot cost: $0.** One manual pull (~10 companies × ~90 daily news windows ≈ 900 Finnhub
+calls at ≤ 60/min ≈ 15–20 min; ~12 Twelve Data calls), no Claude calls, static hosting.
 
 **Licensing.** Finnhub/Twelve Data/Alpha Vantage free tiers are for personal use and limit
 redistribution of their data. A *public* deployment should therefore default to **demo mode**
@@ -319,8 +339,8 @@ fin-news-sentiment/
 └─ README.md
 ```
 
-The existing `src/finsent` prototype (target marking, time split, TF-IDF baseline) moves into
-`backend/marketlens/` in Phase 0; its tests are kept.
+The original prototype (target marking, time split, TF-IDF baseline) now lives in
+`backend/marketlens/` (done in Phase 0).
 
 ---
 
@@ -357,12 +377,12 @@ The existing `src/finsent` prototype (target marking, time split, TF-IDF baselin
 
 The MVP is done when all of the following are implemented **and tested**:
 
-1. 10 dev companies ingest daily via GitHub Actions; `ingestion_logs` records each run.
+1. A one-time pull for 10 companies (≈1 year of prices, ≈90 days of news) completes; `ingestion_logs` records it.
 2. Prices + all five indicator families are stored and shown on the Company Detail chart with news markers.
 3. News is deduplicated; each relevant company gets its own prediction (verified by a multi-company fixture test).
 4. Every displayed label links to its original article and shows source + publish time (ET).
 5. Claude explanations validate against the Pydantic schema and their evidence quotes appear verbatim in the source passage; ambiguous items show `insufficient_evidence` / needs-review.
-6. Daily Claude cap is enforced (test proves no calls past the limit).
+6. Claude is off by default and the daily cap is enforced (tests prove no calls when disabled or past the limit).
 7. Market Overview, Company Detail, News Feed and Screener render real or demo data with loading/empty/error/stale states; demo data is visibly labelled.
 8. Model Performance shows macro-F1 + confusion matrix for FinBERT vs hybrid on ≥ 200 manually labelled pairs, plus 1/5/20-day forward returns (benchmark-relative), with chronological splits.
 9. No secret appears in the repo, the browser bundle or logs (gitleaks clean; bundle grep test).

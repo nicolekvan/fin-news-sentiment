@@ -11,3 +11,8 @@ data/processed/*
 models/
 runs/
 wandb/
+.env.*
+!.env.example
+*.key
+secrets/
+.streamlit/secrets.toml

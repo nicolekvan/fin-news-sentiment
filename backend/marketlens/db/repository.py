@@ -100,3 +100,88 @@ def upsert_prices(conn: Connection, company_id: int, prices: pd.DataFrame, sourc
             rows,
         )
     return len(rows)
+
+
+# --- ingestion logs -------------------------------------------------------------------------
+
+
+def log_start(conn: Connection, job: str, provider: str | None) -> int:
+    return conn.execute(
+        text(
+            "insert into ingestion_logs (job, provider, status) values (:j, :p, 'running') "
+            "returning id"
+        ),
+        {"j": job, "p": provider},
+    ).scalar_one()
+
+
+def log_finish(
+    conn: Connection,
+    log_id: int,
+    status: str,
+    rows: int,
+    api_calls: int,
+    error: str | None = None,
+) -> None:
+    from marketlens.logging_utils import redact
+
+    conn.execute(
+        text("""update ingestion_logs set finished_at = now(), status = :s, rows_upserted = :r,
+                api_calls = :a, error_summary = :e where id = :id"""),
+        {
+            "s": status,
+            "r": rows,
+            "a": api_calls,
+            "e": redact(error)[:500] if error else None,
+            "id": log_id,
+        },
+    )
+
+
+# --- filings & macro ------------------------------------------------------------------------
+
+
+def upsert_filings(conn: Connection, company_id: int, filings: list) -> int:
+    rows = [
+        {
+            "cid": company_id,
+            "acc": f.accession_number,
+            "form": f.form,
+            "fd": f.filed_date,
+            "rd": f.report_date,
+            "doc": f.primary_document,
+            "url": f.url,
+        }
+        for f in filings
+    ]
+    if rows:
+        conn.execute(
+            text("""
+                insert into sec_filings (company_id, accession_number, form, filed_date,
+                                         report_date, primary_document, url)
+                values (:cid, :acc, :form, :fd, :rd, :doc, :url)
+                on conflict (accession_number) do nothing
+            """),
+            rows,
+        )
+    return len(rows)
+
+
+def upsert_macro(conn: Connection, series_id: str, df: pd.DataFrame, source: str) -> int:
+    rows = [
+        {
+            "s": series_id,
+            "d": r.obs_date,
+            "v": None if pd.isna(r.value) else float(r.value),
+            "src": source,
+        }
+        for r in df.itertuples(index=False)
+    ]
+    if rows:
+        conn.execute(
+            text("""insert into macro_observations (series_id, obs_date, value, source)
+                    values (:s, :d, :v, :src)
+                    on conflict (series_id, obs_date) do update set value = excluded.value"""),
+            rows,
+        )
+    return len(rows)

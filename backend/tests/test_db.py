@@ -11,7 +11,7 @@ from marketlens.universe import load_universe
 
 
 def test_all_migrations_applied(engine):
-    assert migrate.applied(engine) == ["0001_init", "0002_roles_rls"]
+    assert migrate.applied(engine) == ["0001_init", "0002_roles_rls", "0003_filings_macro"]
 
 
 def test_seed_companies_and_prices(conn):
@@ -79,7 +79,8 @@ def test_reader_cannot_see_operational_tables(conn):
 
 
 def test_down_then_up_roundtrip(engine):
+    assert migrate.down(engine) == "0003_filings_macro"
     assert migrate.down(engine) == "0002_roles_rls"
     assert migrate.down(engine) == "0001_init"
     assert migrate.applied(engine) == []
-    assert migrate.up(engine) == ["0001_init", "0002_roles_rls"]
+    assert migrate.up(engine) == ["0001_init", "0002_roles_rls", "0003_filings_macro"]

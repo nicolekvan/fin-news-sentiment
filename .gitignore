@@ -21,3 +21,5 @@ node_modules/
 .next/
 out/
 .vercel/
+# raw API caches (provider ToS: do not redistribute)
+data/cache/

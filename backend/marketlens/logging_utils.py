@@ -38,3 +38,4 @@ def configure_logging(level: int = logging.INFO) -> None:
     handler.addFilter(RedactingFilter(get_settings().secret_values()))
     handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
     logging.basicConfig(level=level, handlers=[handler], force=True)
+    logging.getLogger("httpx").setLevel(logging.WARNING)  # per-request lines are noise

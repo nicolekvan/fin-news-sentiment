@@ -26,7 +26,9 @@ def test_logging_filter_redacts_args(caplog):
     assert "topsecret" not in caplog.text and REDACTED in caplog.text
 
 
-def test_claude_disabled_by_default():
+def test_claude_disabled_by_default(monkeypatch):
+    for var in ("DEMO_MODE", "CLAUDE_ENABLED", "CLAUDE_DAILY_REQUEST_LIMIT"):
+        monkeypatch.delenv(var, raising=False)
     s = Settings(_env_file=None)
     assert s.claude_enabled is False and s.claude_daily_request_limit == 0
     assert s.demo_mode is True

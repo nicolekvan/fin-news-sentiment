@@ -185,3 +185,25 @@ def upsert_macro(conn: Connection, series_id: str, df: pd.DataFrame, source: str
             rows,
         )
     return len(rows)
+
+
+def upsert_indicators(conn: Connection, company_id: int, ind: pd.DataFrame) -> int:
+    from marketlens.indicators import INDICATOR_COLUMNS
+
+    cols = ", ".join(INDICATOR_COLUMNS)
+    params = ", ".join(f":{c}" for c in INDICATOR_COLUMNS)
+    updates = ", ".join(f"{c} = excluded.{c}" for c in INDICATOR_COLUMNS)
+    rows = []
+    for r in ind.to_dict("records"):
+        row = {c: (None if pd.isna(r[c]) else float(r[c])) for c in INDICATOR_COLUMNS}
+        row.update(cid=company_id, d=r["trade_date"])
+        rows.append(row)
+    if rows:
+        conn.execute(
+            text(f"""insert into technical_indicators (company_id, trade_date, {cols})
+                     values (:cid, :d, {params})
+                     on conflict (company_id, trade_date) do update set {updates},
+                     computed_at = now()"""),
+            rows,
+        )
+    return len(rows)

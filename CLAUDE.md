@@ -14,3 +14,8 @@
 - Every bullish/bearish call must link to its source article and include an explanation.
 - The project is visual: Streamlit + Plotly dashboard (market treemap, company page with
   price chart and sentiment markers, news feed, model performance).
+
+## Git workflow
+- Commit every change — from large features down to small bug fixes — as soon as it is
+  built and working, then push to GitHub. One logical change per commit, with a clear message.
+- Run the tests and check the staged diff for secrets before each commit.

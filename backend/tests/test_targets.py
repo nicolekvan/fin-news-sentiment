@@ -1,13 +1,19 @@
 from pathlib import Path
 
-from finsent.data import Example, load_jsonl, mark_target, time_split, to_frame
+from marketlens.evaluation.splits import time_split
+from marketlens.text.targets import Example, load_jsonl, mark_target, to_frame
 
-SAMPLE = Path(__file__).parent.parent / "data" / "sample.jsonl"
+SAMPLE = Path(__file__).resolve().parents[2] / "data" / "sample" / "news_sample.jsonl"
 
 
 def test_mark_target_only_marks_target_company():
-    ex = Example(id="x", text="Boeing beats Lockheed Martin; Lockheed shares fall.",
-                 ticker="LMT", company="Lockheed Martin", aliases=["Lockheed"])
+    ex = Example(
+        id="x",
+        text="Boeing beats Lockheed Martin; Lockheed shares fall.",
+        ticker="LMT",
+        company="Lockheed Martin",
+        aliases=["Lockheed"],
+    )
     out = mark_target(ex)
     assert out.count("[TGT]") == 2
     assert "[TGT] Boeing" not in out

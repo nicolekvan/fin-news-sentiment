@@ -9,6 +9,7 @@ Expected JSONL schema, one object per line:
      "company": "Apple", "aliases": ["Apple Inc", "iPhone maker"],
      "label": "bullish"}
 """
+
 from __future__ import annotations
 
 import json
@@ -18,7 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from finsent import LABELS
+from marketlens import LABELS
 
 TARGET_OPEN, TARGET_CLOSE = "[TGT]", "[/TGT]"
 
@@ -60,11 +61,3 @@ def to_frame(examples: list[Example]) -> pd.DataFrame:
     df = pd.DataFrame([vars(e) for e in examples])
     df["marked_text"] = [mark_target(e) for e in examples]
     return df
-
-
-def time_split(df: pd.DataFrame, test_frac: float = 0.2) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Split by publication time, never randomly: news is autocorrelated and a
-    random split leaks near-duplicate stories into the test set."""
-    df = df.sort_values("published_at").reset_index(drop=True)
-    cut = int(len(df) * (1 - test_frac))
-    return df.iloc[:cut], df.iloc[cut:]

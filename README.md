@@ -1,4 +1,4 @@
-# fin-news-sentiment
+# MarketLens AI
 
 Classify financial news articles as **bullish**, **bearish** or **neutral** for
 individual companies.
@@ -9,11 +9,11 @@ The unit of prediction is an **(article, company) pair**, not an article. One
 story can be bullish for one company and bearish for another
 ("Boeing wins contract over Lockheed Martin"). Every mention of the target
 company is wrapped in `[TGT] … [/TGT]` markers so the model knows which one to
-judge (`finsent.data.mark_target`).
+judge (`marketlens.text.targets.mark_target`).
 
 ## Roadmap
 
-1. **Baseline** – TF-IDF + logistic regression (`finsent.baseline`). ✅ scaffolded
+1. **Baseline** – TF-IDF + logistic regression (`marketlens.baseline`). ✅ scaffolded
 2. **Data** – assemble labelled (article, company) pairs. Candidate sources:
    - SEntFiN – entity-level sentiment on financial headlines (closest fit)
    - FiQA-2018 Task 1 – aspect/entity sentiment on news and microblogs
@@ -29,7 +29,7 @@ judge (`finsent.data.mark_target`).
 
 ## Data format
 
-`data/*.jsonl`, one example per line:
+`data/sample/*.jsonl`, one example per line:
 
 ```json
 {"id": "s1", "published_at": "2024-01-03T13:00:00Z",
@@ -38,13 +38,16 @@ judge (`finsent.data.mark_target`).
  "label": "bullish"}
 ```
 
-`data/sample.jsonl` holds 10 toy examples for smoke tests only.
+`data/sample/news_sample.jsonl` holds 10 toy examples for smoke tests only.
 
 ## Quickstart
 
 ```bash
+cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 pytest
-python -m finsent.baseline data/sample.jsonl
+python -m marketlens.baseline ../data/sample/news_sample.jsonl
 ```
+
+See `docs/IMPLEMENTATION_PLAN.md` for the full architecture and roadmap.

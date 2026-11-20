@@ -1,7 +1,8 @@
 """TF-IDF + logistic regression baseline. Train with:
 
-    python -m finsent.baseline data/sample.jsonl --out models/baseline.joblib
+python -m marketlens.baseline ../data/sample/news_sample.jsonl --out models/baseline.joblib
 """
+
 from __future__ import annotations
 
 import argparse
@@ -13,15 +14,18 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 from sklearn.pipeline import Pipeline
 
-from finsent import LABELS
-from finsent.data import load_jsonl, time_split, to_frame
+from marketlens import DIRECTIONAL_LABELS as LABELS
+from marketlens.evaluation.splits import time_split
+from marketlens.text.targets import load_jsonl, to_frame
 
 
 def build_pipeline() -> Pipeline:
-    return Pipeline([
-        ("tfidf", TfidfVectorizer(ngram_range=(1, 2), min_df=1, sublinear_tf=True)),
-        ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
-    ])
+    return Pipeline(
+        [
+            ("tfidf", TfidfVectorizer(ngram_range=(1, 2), min_df=1, sublinear_tf=True)),
+            ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
+        ]
+    )
 
 
 def main() -> None:

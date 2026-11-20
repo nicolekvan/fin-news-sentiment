@@ -1,0 +1,13 @@
+ticker,name,aliases,industry,exchange,cik,is_benchmark,dev_set
+NVDA,NVIDIA Corporation,Nvidia|NVIDIA,Semiconductors,Nasdaq,0001045810,false,true
+AAPL,Apple Inc.,Apple,Consumer Technology,Nasdaq,0000320193,false,true
+MSFT,Microsoft Corporation,Microsoft,Software & Cloud,Nasdaq,0000789019,false,true
+GOOGL,Alphabet Inc.,Alphabet|Google,Digital Advertising,Nasdaq,0001652044,false,true
+AMZN,Amazon.com Inc.,Amazon|Amazon.com|AWS|Amazon Web Services,E-commerce & Cloud,Nasdaq,0001018724,false,true
+META,Meta Platforms Inc.,Meta Platforms|Meta|Facebook,Digital Advertising,Nasdaq,0001326801,false,true
+AVGO,Broadcom Inc.,Broadcom,Semiconductors,Nasdaq,0001730168,false,true
+AMD,Advanced Micro Devices Inc.,Advanced Micro Devices|AMD,Semiconductors,Nasdaq,0000002488,false,true
+ORCL,Oracle Corporation,Oracle,Software & Cloud,NYSE,0001341439,false,true
+PLTR,Palantir Technologies Inc.,Palantir,Software & AI,Nasdaq,0001321655,false,true
+QQQ,Invesco QQQ Trust,Nasdaq-100,Benchmark,Nasdaq,,true,true
+SPY,SPDR S&P 500 ETF Trust,S&P 500,Benchmark,NYSE Arca,,true,true

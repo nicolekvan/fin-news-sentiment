@@ -8,8 +8,8 @@ __pycache__/
 data/raw/*
 data/processed/*
 !data/**/.gitkeep
-models/
-runs/
+/models/
+/runs/
 wandb/
 .env.*
 !.env.example

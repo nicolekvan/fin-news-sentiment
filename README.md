@@ -11,21 +11,19 @@ story can be bullish for one company and bearish for another
 company is wrapped in `[TGT] … [/TGT]` markers so the model knows which one to
 judge (`marketlens.text.targets.mark_target`).
 
-## Roadmap
+## Status
 
-1. **Baseline** – TF-IDF + logistic regression (`marketlens.baseline`). ✅ scaffolded
-2. **Data** – assemble labelled (article, company) pairs. Candidate sources:
-   - SEntFiN – entity-level sentiment on financial headlines (closest fit)
-   - FiQA-2018 Task 1 – aspect/entity sentiment on news and microblogs
-   - Financial PhraseBank – sentence-level, useful for pre-training
-   - Weak labels from market reaction: abnormal return of the ticker in a
-     window after `published_at`, bucketed into the three classes
-3. **Transformer model** – fine-tune FinBERT / DeBERTa with the target markers
-   added as special tokens; long articles chunked around target mentions.
-4. **Evaluation** – macro-F1 on a *time-based* split (never random: news is
-   autocorrelated), plus a check of whether predictions relate to subsequent
-   returns.
-5. **Serving** – a `predict(text, company)` API / CLI.
+| Phase | | |
+|---|---|---|
+| 0 | Repo, pinned deps, CI with secret scanning | ✅ |
+| 1 | Schema, migrations, RLS, company universe, demo data | ✅ |
+| 2 | Providers (Finnhub, Twelve Data, SEC EDGAR, FRED, demo) + one-time pull | ✅ |
+| 3 | Technical indicators | ✅ |
+| 4 | News pipeline + FinBERT + evidence explanations (+ optional Claude review) | ✅ |
+| 5 | Company-level aggregation + FastAPI | ✅ |
+| 6 | Next.js dashboard | ⏳ |
+| 7 | Evaluation + Model Performance page | ⏳ |
+| 8 | Static export + Vercel deployment | ⏳ |
 
 ## Data format
 
@@ -42,12 +40,37 @@ judge (`marketlens.text.targets.mark_target`).
 
 ## Quickstart
 
+Requires Python 3.11+ and PostgreSQL 16.
+
 ```bash
 cd backend
 python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-pytest
-python -m marketlens.baseline ../data/sample/news_sample.jsonl
+pip install -e ".[dev]"          # add ".[ml]" for FinBERT (torch + transformers)
+cp ../.env.example ../.env       # fill in locally; never commit .env
 ```
 
-See `docs/IMPLEMENTATION_PLAN.md` for the full architecture and roadmap.
+Run the tests (database tests need a disposable database):
+
+```bash
+TEST_DATABASE_URL=postgresql+psycopg://localhost/marketlens_test pytest
+```
+
+Build the snapshot:
+
+```bash
+python -m marketlens.db.migrate up
+python -m marketlens.jobs.seed                         # companies (add --demo for synthetic data)
+python -m marketlens.jobs.pull --snapshot 2026-11-20   # prices, news, profiles, filings, macro
+python -m marketlens.jobs.indicators
+python -m marketlens.jobs.news --snapshot 2026-11-20   # FinBERT scoring
+python -m marketlens.jobs.aggregate
+uvicorn marketlens.api.app:app                          # API docs at /api/docs
+```
+
+## Documentation
+- `docs/IMPLEMENTATION_PLAN.md` – architecture, costs, schema, security, acceptance criteria
+- `docs/METHODOLOGY.md` – how labels, explanations and company scores are produced
+- `docs/UNIVERSE_METHODOLOGY.md` – how companies are selected
+
+> MarketLens AI is an educational portfolio project. Sentiment labels describe the tone of news
+> coverage and are not investment advice or price predictions.

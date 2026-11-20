@@ -1,0 +1,10 @@
+{"id": "s1", "published_at": "2024-01-03T13:00:00Z", "text": "Apple beats quarterly revenue estimates as iPhone sales surge.", "ticker": "AAPL", "company": "Apple", "label": "bullish"}
+{"id": "s2", "published_at": "2024-01-05T09:10:00Z", "text": "Tesla recalls 200,000 vehicles over faulty rear-view cameras.", "ticker": "TSLA", "company": "Tesla", "label": "bearish"}
+{"id": "s3", "published_at": "2024-01-08T15:45:00Z", "text": "Microsoft to hold annual shareholder meeting in December.", "ticker": "MSFT", "company": "Microsoft", "label": "neutral"}
+{"id": "s4", "published_at": "2024-01-10T11:20:00Z", "text": "Boeing wins $4 billion Air Force contract, beating Lockheed Martin.", "ticker": "BA", "company": "Boeing", "label": "bullish"}
+{"id": "s5", "published_at": "2024-01-10T11:20:00Z", "text": "Boeing wins $4 billion Air Force contract, beating Lockheed Martin.", "ticker": "LMT", "company": "Lockheed Martin", "aliases": ["Lockheed"], "label": "bearish"}
+{"id": "s6", "published_at": "2024-01-12T08:00:00Z", "text": "Nvidia shares slide after report of tighter export restrictions to China.", "ticker": "NVDA", "company": "Nvidia", "label": "bearish"}
+{"id": "s7", "published_at": "2024-01-15T17:30:00Z", "text": "Amazon names new head of its cloud computing division.", "ticker": "AMZN", "company": "Amazon", "label": "neutral"}
+{"id": "s8", "published_at": "2024-01-17T12:00:00Z", "text": "Meta raises full-year guidance on strong advertising demand.", "ticker": "META", "company": "Meta", "aliases": ["Facebook"], "label": "bullish"}
+{"id": "s9", "published_at": "2024-01-19T10:15:00Z", "text": "Intel cuts dividend and warns of weak data-center sales.", "ticker": "INTC", "company": "Intel", "label": "bearish"}
+{"id": "s10", "published_at": "2024-01-22T14:00:00Z", "text": "Alphabet schedules fourth-quarter earnings call for February 1.", "ticker": "GOOGL", "company": "Alphabet", "aliases": ["Google"], "label": "neutral"}

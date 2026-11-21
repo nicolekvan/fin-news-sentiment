@@ -1,0 +1,258 @@
+<title>MarketLens Labeling Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one judgement at a time — sticky progress rail, article card, answer pad. */
+:root {
+  --bg: #f3f4f1;
+  --panel: #ffffff;
+  --line: #d9dcd4;
+  --fg: #1b1f1a;
+  --muted: #646b62;
+  --accent: #2f5bd3;
+  --bull: #187a3c;
+  --bear: #c22a2a;
+  --flat: #59605a;
+  --unclear: #a35d00;
+  --hl: #fff1b8;
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121512; --panel: #1a1e1a; --line: #2d332d; --fg: #e7ebe4; --muted: #9aa396;
+    --accent: #7aa2ff; --bull: #4ccf7a; --bear: #ff6b6b; --flat: #aab2a6; --unclear: #f0a640;
+    --hl: #4a4218; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121512; --panel: #1a1e1a; --line: #2d332d; --fg: #e7ebe4; --muted: #9aa396;
+  --accent: #7aa2ff; --bull: #4ccf7a; --bear: #ff6b6b; --flat: #aab2a6; --unclear: #f0a640;
+  --hl: #4a4218; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 32px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 14px; }
+header.rail {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  padding-block: 12px 10px; display: grid; gap: 8px; border-bottom: 1px solid var(--line);
+}
+.rail-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: 0.01em; }
+.count { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.count b { color: var(--fg); }
+.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; position: relative; }
+.bar > i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 3px; transition: width .25s; }
+.bar > s { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--fg); opacity: .45; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 10px; min-width: 0; }
+.target { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
+.target .who { font-weight: 600; font-size: 14px; }
+.tick { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; }
+.meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.headline { font-size: 19px; font-weight: 600; line-height: 1.35; margin: 0; text-wrap: balance; }
+.summary { margin: 0; color: var(--fg); max-width: 65ch; overflow-wrap: anywhere; }
+mark { background: var(--hl); color: inherit; border-radius: 2px; padding: 0 1px; }
+.src a { color: var(--accent); font-size: 13px; text-decoration: none; }
+.src a:hover { text-decoration: underline; }
+.pad { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pad button {
+  font: inherit; font-weight: 600; font-size: 15px; padding: 14px 10px; border-radius: 8px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--panel); color: var(--fg);
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px;
+}
+.pad button kbd { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }
+.pad button[data-l="bullish"] { border-color: color-mix(in oklab, var(--bull) 55%, var(--line)); color: var(--bull); }
+.pad button[data-l="bearish"] { border-color: color-mix(in oklab, var(--bear) 55%, var(--line)); color: var(--bear); }
+.pad button[data-l="neutral"] { color: var(--flat); }
+.pad button[data-l="unclear"] { border-color: color-mix(in oklab, var(--unclear) 55%, var(--line)); color: var(--unclear); }
+.pad button[data-l="not_about"] { grid-column: 1 / -1; font-weight: 500; font-size: 14px; color: var(--muted); min-height: 44px; }
+.pad button[aria-pressed="true"] { background: color-mix(in oklab, currentColor 14%, var(--panel)); border-color: currentColor; }
+.pad button:disabled { opacity: .5; cursor: not-allowed; }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.nav button, .nav input {
+  font: inherit; font-size: 13px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--fg);
+}
+.nav button { cursor: pointer; }
+.nav input { flex: 1 1 180px; min-width: 0; }
+.nav .spacer { flex: 1; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.status { font-size: 13px; color: var(--muted); min-height: 1.5em; }
+.status.err { color: var(--bear); }
+details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+details dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 12px 0 4px; font-size: 14px; }
+details dt { font-weight: 600; }
+details p { font-size: 13px; color: var(--muted); margin: 8px 0 0; max-width: 65ch; }
+.empty { text-align: center; padding: 40px 16px; color: var(--muted); }
+.empty b { color: var(--fg); display: block; font-size: 16px; margin-bottom: 4px; }
+@media (max-width: 420px) { .headline { font-size: 17px; } }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="rail">
+    <div class="rail-top">
+      <h1>MarketLens Labeling Desk</h1>
+      <span class="count" id="count">Loading…</span>
+    </div>
+    <div class="bar" aria-hidden="true"><i id="fill" style="width:0%"></i><s id="goal"></s></div>
+  </header>
+
+  <details id="guide">
+    <summary>How to label (read once)</summary>
+    <dl>
+      <dt style="color:var(--bull)">Bullish</dt><dd>The text points to a likely <em>positive</em> business or financial impact for the named company: beats, raised guidance, a won contract, an upgrade.</dd>
+      <dt style="color:var(--bear)">Bearish</dt><dd>The text points to a likely <em>negative</em> impact for that company: misses, cuts, lawsuits, lost deals, downgrades.</dd>
+      <dt style="color:var(--flat)">Neutral</dt><dd>It is about the company, but nothing in it should move the business either way (scheduling, routine announcements, balanced commentary).</dd>
+      <dt style="color:var(--unclear)">Unclear</dt><dd>It is about the company, but the headline and summary do not give enough to judge, or the signals truly conflict.</dd>
+      <dt>Not about it</dt><dd>The company is only named in passing (a list of tickers, a comparison) or the match is wrong.</dd>
+    </dl>
+    <p>Judge only the company named at the top of the card, using only the headline and summary shown. The same story can be good for one company and bad for another. Do not look up what the stock did afterwards. The model's answer is hidden on purpose so it cannot influence you. Keys: 1 bullish · 2 bearish · 3 neutral · 4 unclear · 5 not about it · ← back · → skip.</p>
+  </details>
+
+  <main id="main" aria-live="polite">
+    <div class="card empty" id="placeholder"><b>Loading the evaluation set…</b>Items appear here once the database answers.</div>
+  </main>
+</div>
+
+<script>
+const LABELS = [
+  ["bullish", "Bullish", "1"], ["bearish", "Bearish", "2"], ["neutral", "Neutral", "3"],
+  ["unclear", "Unclear", "4"], ["not_about", "Not about this company", "5"],
+];
+const GOAL = 200;
+const state = { items: [], labels: {}, idx: 0, started: false, saving: false, canWrite: true, msg: "", err: false, itemsLoaded: false };
+const $ = (id) => document.getElementById(id);
+
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function highlight(text, names) {
+  const uniq = [...new Set(names.filter(Boolean))].sort((a, b) => b.length - a.length);
+  if (!uniq.length) return esc(text);
+  const rx = new RegExp("\\b(" + uniq.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")\\b", "g");
+  let out = "", last = 0, m;
+  while ((m = rx.exec(text))) { out += esc(text.slice(last, m.index)) + "<mark>" + esc(m[0]) + "</mark>"; last = m.index + m[0].length; }
+  return out + esc(text.slice(last));
+}
+function fmtET(iso) {
+  try {
+    return new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(iso));
+  } catch { return iso; }
+}
+function nextUnlabeled(from) {
+  const n = state.items.length;
+  for (let k = 0; k < n; k++) { const i = (from + k) % n; if (!state.labels[state.items[i].id]) return i; }
+  return -1;
+}
+
+function render() {
+  const total = state.items.length;
+  const done = state.items.filter((it) => state.labels[it.id]).length;
+  $("count").innerHTML = total ? `<b>${done}</b> / ${total} labelled · goal ${GOAL}` : (state.itemsLoaded ? "No items yet" : "Loading…");
+  $("fill").style.width = total ? (100 * done / total) + "%" : "0%";
+  $("goal").style.left = total ? (100 * Math.min(GOAL, total) / total) + "%" : "0%";
+  const main = $("main");
+  if (!total) {
+    main.innerHTML = state.itemsLoaded
+      ? `<div class="card empty"><b>No items to label yet</b>Claude adds the evaluation set to this page's database. Check back shortly.</div>`
+      : `<div class="card empty"><b>${state.msg ? esc(state.msg) : "Loading the evaluation set…"}</b>${state.err ? "" : "Items appear here once the database answers."}</div>`;
+    return;
+  }
+  const it = state.items[state.idx];
+  const cur = state.labels[it.id]?.label;
+  const allDone = done === total;
+  main.innerHTML = `
+    ${allDone ? `<div class="card empty" style="padding:16px"><b>All ${total} labelled. Thank you!</b>Tell Claude in the chat; you can still review and change any answer below.</div>` : (done >= GOAL && done - 1 < GOAL ? `<div class="card empty" style="padding:16px"><b>200 reached: enough for the evaluation.</b>Keep going if you like; every extra label narrows the error bars.</div>` : "")}
+    <article class="card" aria-label="Item ${state.idx + 1} of ${total}">
+      <div class="target"><span>Judge for</span><span class="who">${esc(it.company)}</span><span class="tick">${esc(it.ticker)}</span>
+        <span class="meta" style="margin-left:auto">#${state.idx + 1} of ${total}</span></div>
+      <div class="meta">${esc(it.source)} · ${esc(fmtET(it.published_at))}</div>
+      <h2 class="headline">${highlight(it.headline, it.names || [])}</h2>
+      ${it.summary ? `<p class="summary">${highlight(it.summary, it.names || [])}</p>` : `<p class="summary" style="color:var(--muted)">No summary from the provider.</p>`}
+      <div class="src"><a href="${esc(it.url)}" target="_blank" rel="noopener noreferrer">Open the original article ↗</a></div>
+    </article>
+    <div class="pad" role="group" aria-label="Your label for ${esc(it.company)}">
+      ${LABELS.map(([k, t, key]) => `<button type="button" data-l="${k}" aria-pressed="${cur === k}" ${state.canWrite && !state.saving ? "" : "disabled"}>${esc(k === "not_about" ? "Not about " + it.company : t)} <kbd>${key}</kbd></button>`).join("")}
+    </div>
+    <div class="nav">
+      <button type="button" id="back">← Back</button>
+      <button type="button" id="skip">Skip →</button>
+      <input id="note" type="text" maxlength="200" placeholder="Optional note (saved with your next answer)" aria-label="Optional note">
+      <span class="spacer"></span>
+      <button type="button" id="jump">Next unlabelled</button>
+    </div>
+    <div class="status ${state.err ? "err" : ""}" role="status">${esc(state.msg)}</div>`;
+  main.querySelectorAll(".pad button").forEach((b) => b.addEventListener("click", () => choose(b.dataset.l)));
+  $("back").onclick = () => move(-1);
+  $("skip").onclick = () => move(1);
+  $("jump").onclick = () => { const i = nextUnlabeled(state.idx + 1); if (i >= 0) { state.idx = i; state.msg = ""; render(); } };
+  if (state.note) $("note").value = state.note;
+  $("note").addEventListener("input", (e) => { state.note = e.target.value; });
+}
+
+function move(d) {
+  const n = state.items.length; if (!n) return;
+  state.idx = (state.idx + d + n) % n; state.msg = ""; state.err = false; state.note = ""; render();
+}
+
+let db = null;
+async function choose(label) {
+  if (!db || state.saving || !state.canWrite) return;
+  const it = state.items[state.idx];
+  state.saving = true; state.msg = "Saving…"; state.err = false; render();
+  const body = { label, labeled_at: new Date().toISOString() };
+  if (state.note && state.note.trim()) body.note = state.note.trim().slice(0, 200);
+  try {
+    await db.collection("labels").doc(it.id).set(body);
+    state.labels[it.id] = body;
+    state.note = "";
+    state.msg = "Saved.";
+    const i = nextUnlabeled(state.idx + 1);
+    if (i >= 0) state.idx = i;
+  } catch (e) {
+    state.err = true;
+    state.msg = e && e.code === "invalid_argument" ? "You can view this page but not save labels." : "Could not save. Check your connection and tap the answer again.";
+    if (e && e.code === "invalid_argument") state.canWrite = false;
+  } finally {
+    state.saving = false; render();
+  }
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+  const map = { "1": "bullish", "2": "bearish", "3": "neutral", "4": "unclear", "5": "not_about" };
+  if (map[e.key]) { e.preventDefault(); choose(map[e.key]); }
+  else if (e.key === "ArrowLeft") move(-1);
+  else if (e.key === "ArrowRight") move(1);
+});
+
+(async function start() {
+  render();
+  const claude = window.claude;
+  if (!claude || !claude.use) { state.msg = "Open this page on claude.ai while signed in to label."; state.err = true; render(); return; }
+  db = await claude.use("db");
+  const user = await claude.use("user");
+  if (!db) { state.msg = "The labelling database is not available in this view. Open the page on claude.ai while signed in."; state.err = true; render(); return; }
+  try { const can = await user?.can?.("data.write"); if (can === false) state.canWrite = false; } catch {}
+  const timer = setTimeout(() => { if (!state.itemsLoaded) { state.msg = "The database is not answering yet. Keep this page open; it will fill in when it connects."; render(); } }, 10000);
+  db.collection("items").orderBy("order").limit(1000).onSnapshot((snap) => {
+    state.items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    if (!snap.metadata.fromCache) { state.itemsLoaded = true; clearTimeout(timer); if (state.msg.startsWith("The database")) state.msg = ""; }
+    if (!state.started && state.items.length) { const i = nextUnlabeled(0); state.idx = i >= 0 ? i : 0; state.started = state.itemsLoaded; }
+    if (state.idx >= state.items.length) state.idx = 0;
+    render();
+  }, (e) => { clearTimeout(timer); state.itemsLoaded = true; state.err = true; state.msg = "Could not load the items (" + e.code + ")."; render(); });
+  db.collection("labels").limit(1000).onSnapshot((snap) => {
+    const m = {}; snap.docs.forEach((d) => { m[d.id] = d.data(); }); state.labels = m;
+    if (!state.started && state.itemsLoaded && state.items.length) { const i = nextUnlabeled(0); state.idx = i >= 0 ? i : 0; state.started = true; }
+    render();
+  }, () => {});
+})();
+</script>

@@ -201,8 +201,8 @@ function ReturnsSection({ fr }: { fr: ForwardReturns }) {
           bullish and bearish stories into one signal ({fr.n_company_days} company-days, {fr.n_mixed} mixed
           days excluded). Entry is the first daily close after publication, so after-hours news counts
           from the next session and nothing uses information from after the story. The data covers about
-          90 days and 10 stocks; 20-day windows overlap, so the intervals are optimistic. This shows what
-          happened after past labels, not whether the labels can predict returns, and the 10 companies
+          90 days; 20-day windows overlap, so the intervals are optimistic. This shows what
+          happened after past labels, not whether the labels can predict returns, and the companies
           were chosen by today&apos;s market cap, which favours stocks that did well.
         </div>
       </CardContent>

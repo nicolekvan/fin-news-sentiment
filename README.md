@@ -41,12 +41,12 @@ technical indicators, a filterable news feed, a screener and an honest model-eva
 
 | | |
 |---|---|
-| Companies | 10 (NVDA, AAPL, MSFT, GOOGL, AMZN, META, AVGO, AMD, ORCL, PLTR) + QQQ, SPY benchmarks |
-| Raw news items pulled (90 days) | 52,768 → 35,265 unique |
-| Articles that name a tracked company | 19,972 (257 syndicated copies linked to originals) |
-| Company-level predictions | 24,325: 36% neutral, 30% bullish, 23% bearish, 11% insufficient evidence |
-| Daily price bars | 3,816 (~15 months incl. indicator warm-up) |
-| Returns after bullish vs bearish company-days | No reliable difference at 1 or 5 days; bearish days were followed by +2.5% vs QQQ at 20 days (n = 80). Descriptive only — see the Model Performance page. |
+| Companies | Top 50 tech companies by market cap ([methodology](docs/UNIVERSE_METHODOLOGY.md)) + QQQ, SPY benchmarks |
+| Raw news items pulled (90 days) | 86,373 across 50 company feeds → 51,481 distinct items |
+| Articles that name a tracked company | 34,497 (359 syndicated copies linked to originals) |
+| Company-level predictions | 43,468: 33% bullish, 33% neutral, 23% bearish, 11% insufficient evidence |
+| Daily price bars | 16,536 for 52 tickers (~15 months incl. indicator warm-up), plus 645 SEC filings |
+| Returns after bullish vs bearish company-days | No reliable difference at 1 day. Bullish days were followed by slight underperformance vs QQQ at 5 days (−0.4%) and 20 days (−1.1%, n = 1,191); bearish days showed no reliable difference. Descriptive only — see the Model Performance page. |
 | Classification metrics | Published on the Model Performance page once the hand-labelled set is complete |
 | Operating cost | $0 (free API tiers, local FinBERT, static hosting; Claude review off) |
 
@@ -159,13 +159,12 @@ the environment secrets, and remove it from git history.
 
 ## Limitations
 
-- One 90-day snapshot of 10 companies; not a live service (the production path is documented in
+- One 90-day snapshot of 50 companies; not a live service (the production path is documented in
   [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md)).
 - FinBERT reads short provider summaries, not full articles, and makes visible mistakes; the
   evaluation page measures how often.
 - Company linking uses tickers and aliases, not named-entity recognition.
 - The universe is chosen by today's market cap (survivorship bias in any return analysis).
-- SEC filings were not included in this snapshot.
 
 ## Data and attribution
 

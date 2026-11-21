@@ -49,7 +49,7 @@
 
 ## Testing
 
-- Backend: 79 pytest tests — providers with mocked transports (including "key never leaks"),
+- Backend: 84 pytest tests — providers with mocked transports (including "key never leaks"),
   migrations up/down, constraints, RLS and the read-only role, indicators against reference
   calculations, pipeline and decision rules, Claude reviewer with a fake client, aggregation
   without look-ahead, forward returns, metrics, API endpoints under the read-only role, rate

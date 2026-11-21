@@ -22,7 +22,7 @@ judge (`marketlens.text.targets.mark_target`).
 | 4 | News pipeline + FinBERT + evidence explanations (+ optional Claude review) | ✅ |
 | 5 | Company-level aggregation + FastAPI | ✅ |
 | 6 | Next.js dashboard (static) + Playwright tests | ✅ |
-| 7 | Evaluation + Model Performance page | ⏳ |
+| 7 | Evaluation + Model Performance page | 🟡 return analysis done; human labelling in progress |
 | 8 | Static export + Vercel deployment | ⏳ |
 
 ## Data format

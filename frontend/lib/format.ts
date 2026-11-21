@@ -34,7 +34,9 @@ export function fmtPrice(v: number | null | undefined): string {
 
 export function fmtPct(v: number | null | undefined, digits = 1): string {
   if (v == null) return "—";
-  return `${v > 0 ? "+" : ""}${(v * 100).toFixed(digits)}%`;
+  const s = (v * 100).toFixed(digits);
+  if (Number(s) === 0) return `${(0).toFixed(digits)}%`; // avoid "-0.00%"
+  return `${v > 0 ? "+" : ""}${s}%`;
 }
 
 export function fmtNum(v: number | null | undefined, digits = 1): string {

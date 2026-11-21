@@ -3,7 +3,7 @@
 import "server-only";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import type { CompanyFile, CompanyRow, Meta, Overview } from "./types";
+import type { CompanyFile, CompanyRow, Meta, Overview, Performance } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "public", "data");
 
@@ -19,3 +19,12 @@ export const getMeta = () => read<Meta>("meta.json");
 export const getCompanies = () => read<CompanyRow[]>("companies.json");
 export const getOverview = () => read<Overview>("overview.json");
 export const getCompanyFile = (ticker: string) => read<CompanyFile>(`company/${ticker}.json`);
+
+/** Optional: older snapshots have no evaluation yet. */
+export function getPerformance(): Performance | null {
+  try {
+    return read<Performance>("performance.json");
+  } catch {
+    return null;
+  }
+}

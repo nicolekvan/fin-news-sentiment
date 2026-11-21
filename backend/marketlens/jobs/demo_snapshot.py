@@ -18,7 +18,7 @@ from sqlalchemy import create_engine, text
 
 from marketlens.db import migrate
 from marketlens.demo import demo_news
-from marketlens.jobs import aggregate, indicators, news
+from marketlens.jobs import aggregate, evaluate, indicators, news
 from marketlens.jobs.seed import seed
 from marketlens.universe import load_universe
 
@@ -51,6 +51,7 @@ def build(db_url: str, out: Path, model=None) -> dict:
             )
     stats = news.run(SNAPSHOT, engine=engine, model=model, raw=raw)
     aggregate.run(engine)
+    evaluate.run(None, engine=engine)  # forward returns only; demo has no human labels
 
     os.environ["DATABASE_URL_READONLY"] = db_url
     os.environ["DEMO_MODE"] = "true"

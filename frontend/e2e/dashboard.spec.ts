@@ -96,9 +96,14 @@ test("screener lists every company and sorts", async ({ page }) => {
   await expect(rows.first()).toContainText(companies[0]!.ticker);
 });
 
-test("model performance shows no unmeasured numbers", async ({ page }) => {
+test("model performance shows only measured numbers", async ({ page }) => {
+  const perf = json<{ classification: unknown; forward_returns: unknown } | null>("performance.json");
   await page.goto("/performance/");
-  await expect(page.getByTestId("performance-empty")).toContainText("Evaluation not published yet");
+  if (perf?.classification) await expect(page.getByTestId("classification-section")).toBeVisible();
+  else await expect(page.getByTestId("performance-empty")).toContainText("labelling in progress");
+  if (perf?.forward_returns) {
+    await expect(page.getByTestId("returns-section")).toContainText("historical association");
+  }
 });
 
 test("theme toggle switches to light and back", async ({ page }) => {

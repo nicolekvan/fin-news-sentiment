@@ -129,3 +129,68 @@ export interface Overview {
   trending: CompanyRow[];
   major_events: NewsItem[];
 }
+
+export interface ClassScores {
+  precision: number;
+  recall: number;
+  f1: number;
+  support: number;
+}
+
+export interface SystemResult {
+  n?: number;
+  accuracy?: number | null;
+  macro_f1?: number | null;
+  per_class?: Record<Label, ClassScores>;
+  ci95?: { accuracy: [number, number]; macro_f1: [number, number] };
+  status?: "not_run";
+  reason?: string;
+}
+
+export interface ErrorExample {
+  ticker: string;
+  headline: string;
+  model: Label;
+  human: Label;
+  confidence: number | null;
+}
+
+export interface Classification {
+  n_labelled: number;
+  systems: Record<string, SystemResult>;
+  confusion_matrix: { labels: Label[]; rows_gold_cols_pred: number[][] };
+  periods: Record<string, { from: string; to: string; n: number; accuracy: number | null; macro_f1: number | null }>;
+  linking: { n: number; not_about: number; precision: number | null };
+  label_distribution: { human: Record<Label, number>; model: Record<Label, number> };
+  errors: Record<"false_directional" | "missed_directional" | "ambiguous", ErrorExample[]>;
+}
+
+export interface ReturnRow {
+  horizon: number;
+  signal: "bullish" | "bearish";
+  n: number;
+  mean_rel: number | null;
+  median_rel: number | null;
+  ci_low: number | null;
+  ci_high: number | null;
+  hit_rate: number | null;
+  mean_raw: number | null;
+}
+
+export interface ForwardReturns {
+  unit: string;
+  benchmark: string;
+  horizons: number[];
+  by_signal: ReturnRow[];
+  spread: { horizon: number; spread: number | null; ci_low: number | null; ci_high: number | null }[];
+  n_company_days: number;
+  n_mixed: number;
+}
+
+export interface Performance {
+  classification: Classification | null;
+  classification_at: string | null;
+  forward_returns: ForwardReturns | null;
+  forward_returns_at: string | null;
+  model: string | null;
+}

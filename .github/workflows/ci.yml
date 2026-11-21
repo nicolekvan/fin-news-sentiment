@@ -61,10 +61,10 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run typecheck
-      # CI builds the committed, fully synthetic demo snapshot (no provider data, no keys)
-      - run: npm run use:demo
+      # CI tests the fully synthetic demo snapshot (no provider data, no keys)
       - run: npm run build
         env:
+          SNAPSHOT: demo
           NEXT_TELEMETRY_DISABLED: "1"
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test

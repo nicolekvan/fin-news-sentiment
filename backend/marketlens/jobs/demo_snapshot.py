@@ -1,7 +1,7 @@
 """Build a fully synthetic DEMO snapshot (safe to publish and to commit).
 
     python -m marketlens.jobs.demo_snapshot --db postgresql+psycopg://.../marketlens_demo \
-        --out ../frontend/demo-data
+        --out ../frontend/snapshots/demo
 
 Synthetic prices and headlines (clearly labelled [DEMO]) go through the real pipeline:
 indicators, news linking, FinBERT scoring, aggregation and export.

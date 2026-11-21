@@ -1,6 +1,6 @@
 """Export the snapshot for the static site by calling the real API endpoints.
 
-    python -m marketlens.jobs.export --out ../frontend/public/data
+    python -m marketlens.jobs.export --out ../frontend/snapshots/real
 
 The site therefore shows exactly what the API returns. Exported news is limited to headline,
 provider summary, source, time, link, label, explanation and evidence (no full article text).

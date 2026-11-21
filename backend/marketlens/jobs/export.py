@@ -56,6 +56,7 @@ def run(out: Path) -> dict:
         _write(out / "companies.json", companies)
         _write(out / "overview.json", _get(client, "/api/overview"))
         _write(out / "macro.json", _get(client, "/api/macro"))
+        _write(out / "performance.json", _get(client, "/api/performance"))
         _write(out / "news.json", _news(client, NEWS_FEED))
         end = meta["prices_as_of"]
         for c in companies:

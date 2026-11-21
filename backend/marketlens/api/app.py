@@ -276,6 +276,25 @@ def overview(request: Request, engine: Engine = Depends(read_engine)) -> dict:
     }
 
 
+@app.get("/api/performance")
+def performance(request: Request, engine: Engine = Depends(read_engine)) -> dict:
+    rows = _rows(
+        engine,
+        """select e.dataset, e.metrics, e.created_at, mv.name, mv.version
+           from model_evaluations e join model_versions mv on mv.id = e.model_version_id
+           order by e.created_at""",
+    )
+    latest = {r["dataset"]: r for r in rows}
+    cls, fr = latest.get("manual-eval-v1"), latest.get("forward-returns-v1")
+    return {
+        "classification": cls["metrics"] if cls else None,
+        "classification_at": cls["created_at"] if cls else None,
+        "forward_returns": fr["metrics"] if fr else None,
+        "forward_returns_at": fr["created_at"] if fr else None,
+        "model": f"{rows[-1]['name']} {rows[-1]['version']}" if rows else None,
+    }
+
+
 @app.get("/api/macro")
 def macro(request: Request, engine: Engine = Depends(read_engine)) -> list[dict]:
     return _rows(

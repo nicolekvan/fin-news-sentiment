@@ -213,8 +213,9 @@ def news(
 @app.get("/api/overview")
 def overview(request: Request, engine: Engine = Depends(read_engine)) -> dict:
     rows = [r for r in _rows(engine, q.SCREENER, mv=AGG_VERSION) if not r["is_benchmark"]]
+    # a company with no aggregate yet (no qualifying news) counts as insufficient evidence
     counts = {
-        k: sum(r["sentiment_label"] == k for r in rows)
+        k: sum((r["sentiment_label"] or "insufficient_evidence") == k for r in rows)
         for k in ("bullish", "bearish", "neutral", "insufficient_evidence")
     }
     by_ind: dict[str, list[float]] = {}

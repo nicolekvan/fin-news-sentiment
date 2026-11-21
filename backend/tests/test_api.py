@@ -159,3 +159,20 @@ def test_admin_requires_correct_token(client, monkeypatch):
 def test_rate_limit(client):
     statuses = [client.get("/api/macro").status_code for _ in range(130)]
     assert 429 in statuses
+
+
+def test_overview_counts_companies_without_scores(client, engine):
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "insert into companies (ticker, name, industry, cik) "
+                "values ('ZZZ', 'No News Co', 'Software & Cloud', '0009999999')"
+            )
+        )
+    try:
+        o = client.get("/api/overview").json()
+        assert sum(o["counts"].values()) == 11
+        assert o["counts"]["insufficient_evidence"] >= 1
+    finally:
+        with engine.begin() as conn:
+            conn.execute(text("delete from companies where ticker = 'ZZZ'"))

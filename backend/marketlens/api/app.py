@@ -253,14 +253,17 @@ def overview(request: Request, engine: Engine = Depends(read_engine)) -> dict:
         end=None,
         q=None,
         include_duplicates=False,
-        limit=200,
+        limit=3000,
         offset=0,
     )
-    major = [
-        m
-        for m in major
-        if m["relevance"] == 1 and m["label"] in ("bullish", "bearish") and not m["needs_review"]
-    ][:8]
+    strong = [m for m in major if m["relevance"] == 1 and not m["needs_review"]]
+    # balance the list: the strongest bullish and the strongest bearish stories
+    major = sorted(
+        [m for m in strong if m["label"] == "bullish"][:4]
+        + [m for m in strong if m["label"] == "bearish"][:4],
+        key=lambda m: m["published_at"],
+        reverse=True,
+    )
     return {
         "counts": counts,
         "heatmap": rows,

@@ -23,3 +23,8 @@ out/
 .vercel/
 # raw API caches (provider ToS: do not redistribute)
 data/cache/
+# exported snapshot (provider-derived data; publish decision in Phase 8)
+frontend/public/data/
+frontend/test-results/
+frontend/playwright-report/
+*.tsbuildinfo

@@ -1,13 +1,53 @@
-ticker,name,aliases,industry,exchange,cik,is_benchmark,dev_set
-NVDA,NVIDIA Corporation,Nvidia|NVIDIA,Semiconductors,Nasdaq,0001045810,false,true
-AAPL,Apple Inc.,Apple,Consumer Technology,Nasdaq,0000320193,false,true
-MSFT,Microsoft Corporation,Microsoft,Software & Cloud,Nasdaq,0000789019,false,true
-GOOGL,Alphabet Inc.,Alphabet|Google,Digital Advertising,Nasdaq,0001652044,false,true
-AMZN,Amazon.com Inc.,Amazon|Amazon.com|AWS|Amazon Web Services,E-commerce & Cloud,Nasdaq,0001018724,false,true
-META,Meta Platforms Inc.,Meta Platforms|Meta|Facebook,Digital Advertising,Nasdaq,0001326801,false,true
-AVGO,Broadcom Inc.,Broadcom,Semiconductors,Nasdaq,0001730168,false,true
-AMD,Advanced Micro Devices Inc.,Advanced Micro Devices|AMD,Semiconductors,Nasdaq,0000002488,false,true
-ORCL,Oracle Corporation,Oracle,Software & Cloud,NYSE,0001341439,false,true
-PLTR,Palantir Technologies Inc.,Palantir,Software & AI,Nasdaq,0001321655,false,true
-QQQ,Invesco QQQ Trust,Nasdaq-100,Benchmark,Nasdaq,,true,true
-SPY,SPDR S&P 500 ETF Trust,S&P 500,Benchmark,NYSE Arca,,true,true
+ticker,name,aliases,industry,exchange,cik,is_benchmark,dev_set,adr_ratio,bare_ticker
+AAPL,Apple Inc.,Apple,Consumer Technology,Nasdaq,0000320193,false,true,1,true
+MSFT,Microsoft Corporation,Microsoft,Software & Cloud,Nasdaq,0000789019,false,true,1,true
+GOOGL,Alphabet Inc.,Alphabet|Google,Digital Advertising,Nasdaq,0001652044,false,true,1,true
+NVDA,NVIDIA Corporation,Nvidia|NVIDIA,Semiconductors,Nasdaq,0001045810,false,true,1,true
+AMZN,Amazon.com Inc.,Amazon|Amazon.com|AWS|Amazon Web Services,E-commerce & Cloud,Nasdaq,0001018724,false,true,1,true
+TSM,Taiwan Semiconductor Manufacturing,TSMC|Taiwan Semiconductor,Semiconductors,NYSE,0001046179,false,false,5,true
+META,Meta Platforms Inc.,Meta Platforms|Meta|Facebook,Digital Advertising,Nasdaq,0001326801,false,true,1,true
+AVGO,Broadcom Inc.,Broadcom,Semiconductors,Nasdaq,0001730168,false,true,1,true
+AMD,Advanced Micro Devices Inc.,Advanced Micro Devices|AMD,Semiconductors,Nasdaq,0000002488,false,true,1,true
+MU,Micron Technology Inc.,Micron,Semiconductors,Nasdaq,0000723125,false,false,1,false
+ASML,ASML Holding N.V.,ASML,Semiconductor Equipment,Nasdaq,0000937966,false,false,1,true
+CSCO,Cisco Systems Inc.,Cisco,Hardware & Networking,Nasdaq,0000858877,false,false,1,true
+PLTR,Palantir Technologies Inc.,Palantir,Software & AI,Nasdaq,0001321655,false,true,1,true
+ORCL,Oracle Corporation,Oracle,Software & Cloud,NYSE,0001341439,false,true,1,true
+PANW,Palo Alto Networks Inc.,Palo Alto Networks,Cybersecurity,Nasdaq,0001327567,false,false,1,true
+INTC,Intel Corporation,Intel,Semiconductors,Nasdaq,0000050863,false,false,1,true
+SAP,SAP SE,SAP,Software & Cloud,NYSE,0001000184,false,false,1,true
+TXN,Texas Instruments Inc.,Texas Instruments,Semiconductors,Nasdaq,0000097476,false,false,1,true
+AMAT,Applied Materials Inc.,Applied Materials,Semiconductor Equipment,Nasdaq,0000006951,false,false,1,true
+CRWD,CrowdStrike Holdings Inc.,CrowdStrike,Cybersecurity,Nasdaq,0001535527,false,false,1,true
+LRCX,Lam Research Corporation,Lam Research,Semiconductor Equipment,Nasdaq,0000707549,false,false,1,true
+IBM,International Business Machines,IBM|International Business Machines,Software & Cloud,NYSE,0000051143,false,false,1,true
+ANET,Arista Networks Inc.,Arista Networks|Arista,Hardware & Networking,NYSE,0001596532,false,false,1,true
+BABA,Alibaba Group Holding Ltd.,Alibaba,E-commerce & Cloud,NYSE,0001577552,false,false,8,true
+DELL,Dell Technologies Inc.,Dell Technologies|Dell,Hardware & Networking,NYSE,0001571996,false,false,1,true
+APH,Amphenol Corporation,Amphenol,Electronic Components,NYSE,0000820313,false,false,1,true
+ADI,Analog Devices Inc.,Analog Devices,Semiconductors,Nasdaq,0000006281,false,false,1,true
+KLAC,KLA Corporation,KLA,Semiconductor Equipment,Nasdaq,0000319201,false,false,1,true
+SONY,Sony Group Corporation,Sony,Consumer Technology,NYSE,0000313838,false,false,1,true
+ARM,Arm Holdings plc,Arm Holdings,Semiconductors,Nasdaq,0001973239,false,false,1,false
+SHOP,Shopify Inc.,Shopify,E-commerce & Cloud,Nasdaq,0001594805,false,false,1,false
+QCOM,Qualcomm Inc.,Qualcomm|QUALCOMM,Semiconductors,Nasdaq,0000804328,false,false,1,true
+CRM,Salesforce Inc.,Salesforce,Software & Cloud,NYSE,0001108524,false,false,1,false
+ACN,Accenture plc,Accenture,IT Services,NYSE,0001467373,false,false,1,true
+PDD,PDD Holdings Inc.,PDD Holdings|Pinduoduo,E-commerce,Nasdaq,0001737806,false,false,4,true
+APP,AppLovin Corporation,AppLovin,Digital Advertising,Nasdaq,0001751008,false,false,1,false
+MRVL,Marvell Technology Inc.,Marvell,Semiconductors,Nasdaq,0001835632,false,false,1,true
+STX,Seagate Technology Holdings plc,Seagate,Hardware & Networking,Nasdaq,0001137789,false,false,1,true
+NET,Cloudflare Inc.,Cloudflare,Cybersecurity,NYSE,0001477333,false,false,1,false
+WDC,Western Digital Corporation,Western Digital,Hardware & Networking,Nasdaq,0000106040,false,false,1,true
+FTNT,Fortinet Inc.,Fortinet,Cybersecurity,Nasdaq,0001262039,false,false,1,true
+NOW,ServiceNow Inc.,ServiceNow,Software & Cloud,NYSE,0001373715,false,false,1,false
+SNOW,Snowflake Inc.,Snowflake,Software & Cloud,NYSE,0001640147,false,false,1,false
+MSI,Motorola Solutions Inc.,Motorola Solutions,Hardware & Networking,NYSE,0000068505,false,false,1,false
+ADBE,Adobe Inc.,Adobe,Software & Cloud,Nasdaq,0000796343,false,false,1,true
+GLW,Corning Incorporated,Corning,Electronic Components,NYSE,0000024741,false,false,1,true
+CDNS,Cadence Design Systems Inc.,Cadence Design Systems|Cadence Design,Software & Cloud,Nasdaq,0000813672,false,false,1,true
+SNPS,Synopsys Inc.,Synopsys,Software & Cloud,Nasdaq,0000883241,false,false,1,true
+INTU,Intuit Inc.,Intuit,Software & Cloud,Nasdaq,0000896878,false,false,1,true
+MELI,MercadoLibre Inc.,MercadoLibre|Mercado Libre,E-commerce,Nasdaq,0001099590,false,false,1,true
+QQQ,Invesco QQQ Trust,Nasdaq-100,Benchmark,Nasdaq,,true,true,1,true
+SPY,SPDR S&P 500 ETF Trust,S&P 500,Benchmark,NYSE Arca,,true,true,1,true

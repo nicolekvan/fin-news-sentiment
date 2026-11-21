@@ -30,7 +30,7 @@ def build(db_url: str, out: Path, model=None) -> dict:
     with engine.begin() as conn:
         conn.execute(text("drop schema public cascade; create schema public"))
     migrate.up(engine)
-    seed(engine, demo=True)
+    seed(engine, demo=True, dev_only=True)
     indicators.run(engine)
     raw = []
     for c in load_universe(dev_only=True):
@@ -49,7 +49,7 @@ def build(db_url: str, out: Path, model=None) -> dict:
                     "related_tickers": [c.ticker],
                 }
             )
-    stats = news.run(SNAPSHOT, engine=engine, model=model, raw=raw)
+    stats = news.run(SNAPSHOT, engine=engine, model=model, raw=raw, dev_only=True)
     aggregate.run(engine)
     evaluate.run(None, engine=engine)  # forward returns only; demo has no human labels
 

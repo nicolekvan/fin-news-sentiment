@@ -36,10 +36,12 @@ def load_raw(snapshot) -> list[dict]:
     return list(rows.values())
 
 
-def run(snapshot, engine=None, model=None, raw: list[dict] | None = None) -> dict:
+def run(
+    snapshot, engine=None, model=None, raw: list[dict] | None = None, dev_only: bool | None = None
+) -> dict:
     engine = engine or get_engine()
     raw = load_raw(snapshot) if raw is None else raw
-    companies = [c for c in load_universe(dev_only=True) if not c.is_benchmark]
+    companies = [c for c in load_universe(dev_only=dev_only) if not c.is_benchmark]
     patterns = {c.ticker: company_pattern(c) for c in companies}
     names = {c.ticker: c.aliases[0] if c.aliases else c.name for c in companies}
 

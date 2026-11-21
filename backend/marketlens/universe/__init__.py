@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 DEFAULT_PATH = Path(__file__).resolve().parents[3] / "config" / "universe.csv"
-METHOD_VERSION = "universe-v1"
+METHOD_VERSION = "universe-v2"  # v2: top 50; cap = US price x shares / ADR ratio
 
 
 @dataclass(frozen=True)
@@ -20,6 +20,8 @@ class Company:
     is_benchmark: bool
     dev_set: bool
     aliases: tuple[str, ...] = field(default_factory=tuple)
+    adr_ratio: int = 1  # ordinary shares per US-listed share (ADR); 1 for ordinary stock
+    bare_ticker: bool = True  # False for tickers that are ordinary words (NOW, NET, APP...)
 
 
 def _bool(value: str) -> bool:
@@ -28,7 +30,12 @@ def _bool(value: str) -> bool:
     return value.strip().lower() == "true"
 
 
-def load_universe(path: Path = DEFAULT_PATH, dev_only: bool = False) -> list[Company]:
+def load_universe(path: Path = DEFAULT_PATH, dev_only: bool | None = None) -> list[Company]:
+    """dev_only=None follows the UNIVERSE_SCOPE setting ("full" by default, "dev" = 10)."""
+    if dev_only is None:
+        from marketlens.config import get_settings
+
+        dev_only = get_settings().universe_scope == "dev"
     with open(path, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     companies = [
@@ -41,6 +48,8 @@ def load_universe(path: Path = DEFAULT_PATH, dev_only: bool = False) -> list[Com
             cik=r["cik"].strip() or None,
             is_benchmark=_bool(r["is_benchmark"]),
             dev_set=_bool(r["dev_set"]),
+            adr_ratio=int(r.get("adr_ratio") or 1),
+            bare_ticker=_bool(r.get("bare_ticker") or "true"),
         )
         for r in rows
     ]
@@ -58,5 +67,7 @@ def validate(companies: list[Company]) -> None:
             "duplicate CIK: an issuer is listed more than once (share-class double count)"
         )
     for c in companies:
+        if c.adr_ratio < 1:
+            raise ValueError(f"{c.ticker}: adr_ratio must be >= 1")
         if not c.is_benchmark and not (c.cik and c.cik.isdigit() and len(c.cik) == 10):
             raise ValueError(f"{c.ticker}: non-benchmark companies need a 10-digit CIK")

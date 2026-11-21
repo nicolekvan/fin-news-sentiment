@@ -36,7 +36,7 @@ def news_cache_path(ticker: str, snapshot: date) -> Path:
 
 def run(snapshot: date, steps: set[str], engine=None) -> None:
     engine = engine or get_engine()
-    companies = load_universe(dev_only=True)
+    companies = load_universe()
     stocks = [c for c in companies if not c.is_benchmark]
     with engine.begin() as conn:
         ids = repo.upsert_companies(conn, companies)
@@ -64,7 +64,7 @@ def run(snapshot: date, steps: set[str], engine=None) -> None:
         from marketlens.providers.finnhub import FinnhubProvider
 
         def profiles(p):
-            caps = {c.ticker: p.profile(c.ticker).market_cap_usd for c in stocks}
+            caps = {c.ticker: p.profile(c.ticker, c.adr_ratio).market_cap_usd for c in stocks}
             ranked = sorted((t for t in caps if caps[t]), key=lambda t: -caps[t])
             with engine.begin() as conn:
                 for rank, t in enumerate(ranked, 1):

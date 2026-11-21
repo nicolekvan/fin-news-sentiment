@@ -14,7 +14,7 @@ from marketlens.demo import DEMO_SOURCE, demo_prices
 from marketlens.universe import load_universe
 
 
-def seed(engine, demo: bool = False, dev_only: bool = True) -> dict[str, int]:
+def seed(engine, demo: bool = False, dev_only: bool | None = None) -> dict[str, int]:
     companies = load_universe(dev_only=dev_only)
     with engine.begin() as conn:
         ids = upsert_companies(conn, companies)
@@ -29,7 +29,7 @@ def main() -> None:
     ap.add_argument("--demo", action="store_true")
     ap.add_argument("--all", action="store_true", help="full universe, not just the dev set")
     args = ap.parse_args()
-    ids = seed(get_engine(), demo=args.demo, dev_only=not args.all)
+    ids = seed(get_engine(), demo=args.demo, dev_only=False if args.all else None)
     print(f"seeded {len(ids)} companies" + (" with demo prices" if args.demo else ""))
 
 

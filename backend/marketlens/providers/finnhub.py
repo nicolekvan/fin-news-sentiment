@@ -41,13 +41,21 @@ class FinnhubProvider:
             day += timedelta(days=1)
         return sorted(items.values(), key=lambda i: i.published_at)
 
-    def profile(self, ticker: str) -> CompanyProfile:
+    def profile(self, ticker: str, adr_ratio: int = 1) -> CompanyProfile:
+        """Market cap = US-listed price x shares outstanding / ADR ratio.
+
+        Finnhub's own `marketCapitalization` is reported in inconsistent currencies for some
+        foreign issuers, and `shareOutstanding` counts ordinary shares, so one formula with an
+        explicit ADR ratio ranks US stocks and ADRs consistently in USD.
+        """
         d = self.client.get("/stock/profile2", {"symbol": ticker}).json() or {}
-        mcap = d.get("marketCapitalization")  # reported in USD millions
+        q = self.client.get("/quote", {"symbol": ticker}).json() or {}
+        price, shares_m = q.get("c"), d.get("shareOutstanding")
+        cap = float(price) * float(shares_m) * 1e6 / adr_ratio if price and shares_m else None
         return CompanyProfile(
             ticker=ticker,
             name=d.get("name") or ticker,
-            market_cap_usd=float(mcap) * 1e6 if mcap else None,
+            market_cap_usd=cap,
             industry=d.get("finnhubIndustry"),
         )
 

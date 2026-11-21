@@ -37,5 +37,5 @@ class DemoProvider:
         df = demo_prices(ticker, start.isoformat(), end.isoformat())
         return df[["trade_date", "open", "high", "low", "close", "volume"]]
 
-    def profile(self, ticker: str) -> CompanyProfile:
+    def profile(self, ticker: str, adr_ratio: int = 1) -> CompanyProfile:
         return CompanyProfile(ticker, self.names.get(ticker, ticker), None, None)

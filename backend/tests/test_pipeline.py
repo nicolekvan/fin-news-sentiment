@@ -119,3 +119,20 @@ def test_unpunctuated_headline_stays_its_own_sentence():
     sents = split_sentences(link.passage)
     assert sents == ["Lenders balk at Nvidia chips in orbit", "Nvidia shares slipped."]
     assert all(s in link.passage for s in sents)
+
+
+FULL = [c for c in load_universe(dev_only=False) if not c.is_benchmark]
+FULL_PATTERNS = {c.ticker: company_pattern(c) for c in FULL}
+
+
+def test_word_like_tickers_need_explicit_notation():
+    assert link_article("NOW AVAILABLE: new APP for the NET", "", FULL, FULL_PATTERNS) == []
+    links = link_article(
+        "ServiceNow (NOW) and $NET rally; NYSE: CRM slips", "", FULL, FULL_PATTERNS
+    )
+    assert {ln.ticker for ln in links} == {"NOW", "NET", "CRM"}
+
+
+def test_company_names_still_link_for_strict_tickers():
+    links = link_article("Cloudflare beats estimates", "", FULL, FULL_PATTERNS)
+    assert [ln.ticker for ln in links] == ["NET"]

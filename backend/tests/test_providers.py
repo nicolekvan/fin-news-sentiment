@@ -61,14 +61,24 @@ def test_finnhub_news_one_call_per_day_and_dedup():
     assert items[0].published_at.tzinfo is not None
 
 
-def test_finnhub_profile_market_cap_in_usd():
-    t = httpx.MockTransport(
-        lambda r: httpx.Response(
-            200, json={"name": "NVIDIA Corp", "marketCapitalization": 3_500_000.0}
+def test_finnhub_market_cap_from_price_shares_and_adr_ratio():
+    def handler(req):
+        if req.url.path.endswith("/quote"):
+            return httpx.Response(200, json={"c": 100.0})
+        # Finnhub's own cap is ignored (its currency is unreliable for some ADRs)
+        return httpx.Response(
+            200,
+            json={
+                "name": "X",
+                "shareOutstanding": 1000.0,
+                "marketCapitalization": 1.0,
+                "currency": "TWD",
+            },
         )
-    )
-    prof = _fast(FinnhubProvider(transport=t)).profile("NVDA")
-    assert prof.market_cap_usd == pytest.approx(3.5e12)
+
+    p = _fast(FinnhubProvider(transport=httpx.MockTransport(handler)))
+    assert p.profile("AAA").market_cap_usd == pytest.approx(100e9)
+    assert p.profile("TSM", adr_ratio=5).market_cap_usd == pytest.approx(20e9)
 
 
 def test_retries_then_succeeds_on_429():

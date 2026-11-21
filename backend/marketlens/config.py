@@ -6,6 +6,7 @@ Secrets are `SecretStr`, so they never appear in reprs, logs or tracebacks.
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -15,6 +16,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     demo_mode: bool = True
+    universe_scope: Literal["dev", "full"] = "full"
 
     finnhub_api_key: SecretStr | None = None
     twelve_data_api_key: SecretStr | None = None

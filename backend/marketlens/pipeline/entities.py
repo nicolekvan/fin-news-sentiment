@@ -30,8 +30,13 @@ def company_pattern(c: Company) -> re.Pattern:
     names = sorted({c.name, *c.aliases} - {""}, key=len, reverse=True)
     alias = "|".join(re.escape(n) for n in names)
     ticker = re.escape(c.ticker)
-    # $NVDA, (NVDA), NASDAQ:NVDA, or the bare upper-case ticker
-    return re.compile(rf"(?P<alias>\b(?:{alias})\b)|(?P<ticker>\$?\b{ticker}\b)")
+    if c.bare_ticker:
+        # $NVDA, (NVDA), NASDAQ:NVDA, or the bare upper-case ticker
+        tick = rf"\$?\b{ticker}\b"
+    else:
+        # word-like tickers (NOW, NET, APP...) only count in explicit ticker notation
+        tick = rf"(?:\${ticker}|\({ticker}\)|(?:NYSE|NASDAQ|Nasdaq)\s*:\s*{ticker})\b"
+    return re.compile(rf"(?P<alias>\b(?:{alias})\b)|(?P<ticker>{tick})")
 
 
 def split_sentences(text: str) -> list[str]:

@@ -21,7 +21,7 @@ judge (`marketlens.text.targets.mark_target`).
 | 3 | Technical indicators | ✅ |
 | 4 | News pipeline + FinBERT + evidence explanations (+ optional Claude review) | ✅ |
 | 5 | Company-level aggregation + FastAPI | ✅ |
-| 6 | Next.js dashboard | ⏳ |
+| 6 | Next.js dashboard (static) + Playwright tests | ✅ |
 | 7 | Evaluation + Model Performance page | ⏳ |
 | 8 | Static export + Vercel deployment | ⏳ |
 
@@ -66,6 +66,18 @@ python -m marketlens.jobs.news --snapshot 2026-11-20   # FinBERT scoring
 python -m marketlens.jobs.aggregate
 uvicorn marketlens.api.app:app                          # API docs at /api/docs
 ```
+
+### Dashboard
+
+```bash
+cd frontend
+npm ci
+npm run use:demo     # or: python -m marketlens.jobs.export --out ../frontend/public/data
+npm run build        # static site in ./out
+npx playwright test  # end-to-end tests against ./out
+```
+
+`frontend/demo-data/` is a fully synthetic snapshot (labelled DEMO) used by CI and demo mode.
 
 ## Documentation
 - `docs/IMPLEMENTATION_PLAN.md` – architecture, costs, schema, security, acceptance criteria
